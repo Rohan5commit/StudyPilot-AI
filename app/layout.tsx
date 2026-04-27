@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     title: "StudySprint AI",
     description:
       "A student study copilot that turns raw notes into a structured revision workflow.",
-    url: "https://studysprint-ai.vercel.app",
+    url: "https://studysprint-ai-rohan-santhoshs-projects.vercel.app",
     siteName: "StudySprint AI",
     type: "website",
   },
