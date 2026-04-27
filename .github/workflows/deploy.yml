@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: studypilot-ai-production
   cancel-in-progress: true
@@ -14,60 +17,32 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       VERCEL_ORG_ID: team_WXaTtgXKt64O2Q96QzmRXy5N
       VERCEL_PROJECT_ID: prj_IDE73pAqrTLsyg2dV08FnYrufMjs
-      VERCEL_TOKEN_EXPIRES_AT: '2026-04-27T12:29:49Z'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check temporary Vercel token window
-        id: vercel_window
-        shell: bash
-        run: |
-          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
-            echo "VERCEL_TOKEN secret missing. Skipping deploy."
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          now_ts=$(date -u +%s)
-          expiry_ts=$(date -u -d "$VERCEL_TOKEN_EXPIRES_AT" +%s)
-
-          if [ "$now_ts" -ge "$expiry_ts" ]; then
-            echo "Temporary Vercel token expired at $VERCEL_TOKEN_EXPIRES_AT. Skipping deploy."
-            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "should_deploy=true" >> "$GITHUB_OUTPUT"
-
       - name: Setup Node.js
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 24
 
       - name: Install dependencies
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         run: npm install
 
       - name: Typecheck
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         run: npm run typecheck
 
       - name: Install Vercel CLI
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         run: npm install -g vercel@51.6.1
 
       - name: Pull Vercel environment
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build production artifacts
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to production
-        if: steps.vercel_window.outputs.should_deploy == 'true'
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
