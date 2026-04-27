@@ -2,7 +2,7 @@
 
 StudySprint AI is a polished, demo-ready student study copilot built for the Synapse Innovation Hack. It turns messy notes, syllabus text, or topic lists into a structured revision workflow with summaries, flashcards, quizzes, weak-topic drills, and a revision sprint plan.
 
-**Live app:** https://studysprint-ai.vercel.app  
+**Live app:** https://studysprint-ai-rohan-santhoshs-projects.vercel.app  
 **GitHub repo:** https://github.com/Rohan5commit/StudySprint-AI
 
 ## Why this product works for judges
